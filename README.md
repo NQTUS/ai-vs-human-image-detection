@@ -72,7 +72,7 @@ The notebook provides a structured approach to the classification task:
 
 6. **Inference and Submission**
    - Generate predictions with test-time transforms
-   - Visualize sample predictions with confidence scores:  
+   - Visualize sample predictions:  
      ![Output](images/output.png)
    - Format submission file for competition
 
