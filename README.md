@@ -1,142 +1,137 @@
 # AI vs Human Image Classifier
 
 ## Overview
-This project tackles the crucial challenge of distinguishing between AI-generated and human-created images—a task of growing importance as generative AI becomes increasingly sophisticated in creating realistic content. Using advanced computer vision and deep learning techniques, this notebook provides a comprehensive solution that achieves high accuracy in classifying images as either AI-generated or human-created.
-
-The ability to detect AI-generated content has significant implications for media authenticity, digital forensics, and combating misinformation. This project contributes to the broader effort of maintaining trust in digital media by providing reliable detection methods.
+This project tackles the challenge of distinguishing AI-generated images from human-created ones, a task increasingly critical as generative AI produces realistic content. Using advanced computer vision and deep learning, this solution achieves a competition score of **0.96655**, contributing to media authenticity, digital forensics, and misinformation prevention.
 
 ## Dataset
-The dataset is provided by Shutterstock and DeepMedia for the "Can You Tell the Difference?" competition:
-
+The dataset, provided by Shutterstock and DeepMedia for the "Can You Tell the Difference?" competition, includes:
 - **Training set**: 80,000 images
 - **Test set**: 5,500 images
 - **Classes**: Human-created (0) and AI-generated (1)
 
-The authentic images are sourced from Shutterstock's extensive collection, with approximately one-third featuring humans. The AI-generated counterparts were created by DeepMedia using state-of-the-art generative models. This pairing ensures a direct comparison between real and AI-generated content, creating a robust foundation for training detection systems.
+Authentic images are sourced from Shutterstock (one-third featuring humans), paired with AI-generated versions from DeepMedia’s cutting-edge models, enabling robust detection.
 
 ## Technical Environment
 
 ### Hardware
-This project was developed and tested using:
+Developed and tested on:
 - NVIDIA Tesla P100 GPU (16GB VRAM)
 - CUDA 11.2
 - 25GB+ RAM recommended
 
 ### Software
-The solution is implemented as a single Jupyter notebook running on:
+Implemented in a Jupyter notebook with:
 - Python 3.8+
 - PyTorch 1.9+
 - CUDA-enabled environment (Kaggle/Colab)
 
 ## Notebook Contents
-
-The notebook follows a structured approach to solving this classification problem:
+The notebook provides a structured approach to the classification task:
 
 1. **Setup and Configuration**
-   - Library imports and version checks
-   - GPU configuration and memory optimization
-   - Hyperparameter settings
-   - Reproducibility setup (fixed seeds)
+   - Import libraries (PyTorch, torchvision, etc.) and verify versions
+   - Configure GPU and optimize memory usage
+   - Set hyperparameters and ensure reproducibility with fixed seeds
 
 2. **Data Exploration**
-   - Dataset loading and statistical analysis
-   - Class distribution visualization
-   - Sample image rendering from both classes
-   - Detailed analysis of image characteristics:
-     - Size distributions (width/height) comparison between AI and human images
-     - Brightness patterns and intensity profiles
-     - Color distribution analysis
+   - Load and analyze dataset statistics
+   - Visualize class distribution and sample images
+   - Examine image properties:
+     - Brightness distribution  
+       ![Brightness Distribution](images/brightness_distribution.png)
+     - Width and height distributions  
+       ![Width and Height Distributions](images/width_height_distributions.png)
+     - Sample images from both classes  
+       ![Sample 1](images/samples_1.png)  
+       ![Sample 2](images/samples_2.png)
 
 3. **Data Preprocessing**
-   - Advanced image transformations:
-     - Resize with bicubic interpolation
-     - Random cropping and flips
-     - Color jittering and normalization
-   - Custom dataset implementation with efficient loading
-   - Stratified train-validation split (95%/5%)
+   - Apply advanced transformations via `torchvision.v2`:
+     - Resize to 512x512 with bicubic interpolation
+     - Random flips, crops, color jittering, grayscale, and erasing
+     - Gaussian noise and blur for robustness
+     - Normalization with ImageNet stats
+   - Custom test-time transformations with center cropping
+   - Efficient dataset loading and stratified train-validation split (95%/5%)
 
 4. **Model Development**
-   - Implementation of RegNet Y-32GF architecture
-   - Custom model head for binary classification
-   - Training and validation pipeline development
-   - Optimization strategy with Adam optimizer
-   - Learning rate scheduling with step decay
+   - **SimplifiedFIRE Model**: Adapted from the [FIRE model](https://github.com/Chuchad/FIRE/tree/main), featuring:
+     - ResNet18 backbone (pretrained on ImageNet)
+     - Frequency filtering (`FrequencyFilter`) for mid-frequency features (radius 30-100)
+     - 6-channel input (3 RGB + 3 frequency)
+     - Modified conv1 layer and binary classification head (2 outputs)
+   - Adam optimizer and step-decay learning rate scheduling
 
 5. **Model Training**
-   - Comprehensive training loop with:
-     - Mixed precision training for GPU optimization
-     - Batch progress visualization
-     - Epoch-level metrics tracking
-     - Model checkpointing based on validation accuracy
-   - Loss and accuracy visualizations
+   - Training loop with:
+     - Mixed precision training for GPU efficiency
+     - Batch and epoch-level progress tracking
+     - Loss/accuracy visualization:  
+       ![Accuracy vs Epochs](images/accuracy_vs_epochs.png)  
+       ![Loss vs Epochs](images/loss_vs_epochs.png)
+     - Checkpointing based on validation performance
 
 6. **Inference and Submission**
-   - Test-time augmentation strategy
-   - Prediction visualization with sample images
-   - Confidence scoring
-   - Submission file generation in competition format
+   - Generate predictions with test-time transforms
+   - Visualize sample predictions with confidence scores:  
+     ![Output](images/output.png)
+   - Format submission file for competition
 
 ## Performance Optimization
-- **Memory Optimization**: Implements efficient data loading with proper batch sizing for P100 GPU
-- **CPU Parallelism**: Leverages multiprocessing for data preprocessing
-- **CUDA Optimization**: Configured for optimal GPU utilization
+- **Memory**: Optimized batch sizing for P100 GPU
+- **Parallelism**: Multiprocessing for preprocessing
+- **CUDA**: Tuned for efficient GPU utilization
 
 ## Results
-The RegNet Y-32GF model demonstrates strong performance in distinguishing between AI-generated and human-created images:
-- Training accuracy: 0.998
-- Validation accuracy: 0.9988
-- F1 Score: 0.9987
+The `SimplifiedFIRE` model achieves:
+- **Competition Score**: 0.96655
+- Training metrics (tracked in notebook):
+  - **Training Accuracy**: 0.998
+  - **Validation Accuracy**: 0.9988
+  - **F1 Score**: 0.9987
 
-Performance metrics are tracked and visualized throughout the training process, with detailed classification reports available in the notebook.
+Visualizations of predictions and training progress are included (see above).
 
 ## How to Use
 
 ### Requirements
-The notebook requires the following libraries:
-
+Install dependencies from `requirements.txt`:
 ```
 torch>=1.9.0
 torchvision>=0.10.0
 numpy>=1.20.0
 pandas>=1.3.0
-opencv-python>=4.5.3
 pillow>=8.3.1
 matplotlib>=3.4.3
 seaborn>=0.11.2
 scikit-learn>=0.24.2
 tqdm>=4.62.2
-albumentations>=1.0.3
-timm>=0.5.4
 ```
 
-A requirements.txt file is included in the repository.
-
 ### Running the Notebook
-1. Upload the notebook to a platform with P100 GPU support or equivalent (Kaggle/Colab recommended)
-2. Install the required dependencies:
+1. Upload to a GPU-enabled platform (Kaggle/Colab recommended)
+2. Install dependencies:
    ```
    !pip install -r requirements.txt
    ```
-3. Ensure access to the competition dataset
-4. Run all cells sequentially
-5. For custom inference, modify the test data path in the configuration section
+3. Ensure dataset access
+4. Run cells sequentially
+5. Modify test data path for custom inference
 
 ### Dataset Access
-The complete dataset is available at: https://www.kaggle.com/datasets/alessandrasala79/ai-vs-human-generated-dataset
+Available at: [https://www.kaggle.com/datasets/alessandrasala79/ai-vs-human-generated-dataset](https://www.kaggle.com/datasets/alessandrasala79/ai-vs-human-generated-dataset)
 
 ## Competition
-This project was developed for the "Can You Tell the Difference?" competition hosted by Women in AI. The competition challenges participants to design machine learning models that can accurately classify images as AI-generated or human-created, while ensuring fairness and robust performance across diverse data.
-
-More information can be found at: https://www.womeninai.co/kagglechallenge2025
+Developed for the "Can You Tell the Difference?" competition by Women in AI, focusing on accurate classification of AI-generated vs. human-created images. Details: [https://www.womeninai.co/kagglechallenge2025](https://www.womeninai.co/kagglechallenge2025)
 
 ## Future Improvements
-- Model ensemble strategies combining multiple architectures
-- Additional data augmentation techniques specific to AI-generated content
-- Explainable AI methods to highlight distinguishing features
-- Adversarial testing to improve robustness against evolving generation methods
-
+- Explore ensemble models with additional architectures
+- Refine frequency-based feature extraction
+- Add explainability to identify AI-specific patterns
+- Test robustness against advanced generative methods
 
 ## Acknowledgements
-- Shutterstock and DeepMedia for providing the comprehensive dataset
-- Women in AI for hosting and organizing the competition
-- NVIDIA for GPU computing resources
+- Shutterstock and DeepMedia for the dataset
+- Women in AI for hosting the competition
+- NVIDIA for GPU resources
+- [FIRE model](https://github.com/Chuchad/FIRE/tree/main) for inspiration and baseline architecture
