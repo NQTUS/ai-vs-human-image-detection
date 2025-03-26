@@ -66,9 +66,8 @@ The notebook provides a structured approach to the classification task:
    - Training loop with:
      - Mixed precision training for GPU efficiency
      - Batch and epoch-level progress tracking
-     - Loss/accuracy visualization:  
-       ![Accuracy vs Epochs](images/accuracy_vs_epochs.png)  
-       ![Loss vs Epochs](images/loss_vs_epochs.png)
+     - Loss/accuracy visualization (sub-images: Accuracy vs Epochs and Loss vs Epochs)  
+       ![Training Metrics](images/training_metrics.png)
      - Checkpointing based on validation performance
 
 6. **Inference and Submission**
@@ -86,9 +85,8 @@ The notebook provides a structured approach to the classification task:
 The `SimplifiedFIRE` model achieves:
 - **Competition Score**: 0.96655
 - Training metrics (tracked in notebook):
-  - **Training Accuracy**: 0.998
-  - **Validation Accuracy**: 0.9988
-  - **F1 Score**: 0.9987
+  - **Training Accuracy**: 0.9895
+  - **Validation Accuracy**: 0.9902
 
 Visualizations of predictions and training progress are included (see above).
 
